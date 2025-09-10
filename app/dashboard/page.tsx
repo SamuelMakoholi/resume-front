@@ -63,7 +63,7 @@ export default function Dashboard() {
             }
           });
           const data = await response.json();
-          setTemplates(data);
+          setTemplates(data.data || []);
         } catch (error) {
           console.error('Failed to fetch templates', error);
         } finally {
@@ -96,8 +96,8 @@ export default function Dashboard() {
           ]);
           const resumesData = await resumesResponse.json();
           const coverLettersData = await coverLettersResponse.json();
-          setResumes(resumesData);
-          setCoverLetters(coverLettersData);
+          setResumes(resumesData.data || []);
+          setCoverLetters(coverLettersData.data || []);
         } catch (error) {
           console.error('Failed to fetch documents', error);
         } finally {

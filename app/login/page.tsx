@@ -88,16 +88,17 @@ export default function Login() {
         console.log('Login successful! Full response:', data);
         console.log('Available keys:', Object.keys(data));
         
-        // Store token and user data - be flexible with response structure
-        if (data.token || data.access_token) {
-          const token = data.token || data.access_token;
-          const user = data.user || data.data || data;
+        // Check for token within the nested 'data' object from the API response
+        if (data.data && data.data.token) {
+          const token = data.data.token;
+          const user = data.data.user;
           
           console.log('Storing token:', token);
           console.log('Storing user data:', user);
           
           localStorage.setItem('token', token);
           localStorage.setItem('user', JSON.stringify(user));
+          
           // Redirect to dashboard
           router.push('/dashboard');
         } else {
