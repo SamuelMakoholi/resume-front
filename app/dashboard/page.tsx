@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Sidebar from '../../components/Sidebar';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import CoverLetterViewer from '../../components/CoverLetterViewer';
 
 interface User {
   id: number;
@@ -21,6 +24,7 @@ export default function Dashboard() {
   const [resumes, setResumes] = useState<any[]>([]);
   const [coverLetters, setCoverLetters] = useState<any[]>([]);
   const [documentsLoading, setDocumentsLoading] = useState(true);
+  const [viewingCoverLetter, setViewingCoverLetter] = useState<number | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -144,163 +148,114 @@ export default function Dashboard() {
   if (isLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        <LoadingSpinner text="Loading dashboard..." size="large" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-[rgb(var(--primary))] rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">R</span>
-                </div>
-              </div>
-              <div className="hidden md:block">
-                <div className="ml-10 flex items-baseline space-x-4">
-                  <Link href="/dashboard" className="bg-[rgb(var(--primary))] text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</Link>
-                  <Link href="/dashboard/subscription" className="text-black hover:bg-gray-200 px-3 py-2 rounded-md text-sm font-medium">Subscription</Link>
-                </div>
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="ml-4 flex items-center md:ml-6">
-                <p className="text-black mr-4">Welcome, {user.name}!</p>
-                <button 
-                  onClick={logout}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-            <div className="-mr-2 flex md:hidden">
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="bg-white inline-flex items-center justify-center p-2 rounded-md text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-[rgb(var(--primary))]" aria-expanded="false">
-                <span className="sr-only">Open main menu</span>
-                <svg className={`${isMenuOpen ? 'hidden' : 'block'} h-6 w-6`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-                <svg className={`${isMenuOpen ? 'block' : 'hidden'} h-6 w-6`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+    <div className="min-h-screen bg-gray-50 flex">
+      <Sidebar user={user} onLogout={logout} />
+      
+      <main className="flex-1 overflow-auto">
+        <div className="p-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+            <p className="text-gray-600">Welcome back, {user.name}! Here's what's happening with your documents.</p>
           </div>
-        </div>
 
-        {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link href="/dashboard" className="bg-[rgb(var(--primary))] text-white block px-3 py-2 rounded-md text-base font-medium">Dashboard</Link>
-            <Link href="/dashboard/subscription" className="text-black hover:bg-gray-200 block px-3 py-2 rounded-md text-base font-medium">Subscription</Link>
-          </div>
-          <div className="pt-4 pb-3 border-t border-gray-200">
-            <div className="flex items-center px-5">
-              <div className="ml-3">
-                <div className="text-base font-medium leading-none text-black">{user.name}</div>
-                <div className="text-sm font-medium leading-none text-gray-600">{user.email}</div>
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-bold">📄</span>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Total Resumes</p>
+                  <p className="text-2xl font-bold text-gray-900">{resumes.length}</p>
+                </div>
               </div>
             </div>
-            <div className="mt-3 px-2 space-y-1">
-              <button 
-                onClick={logout}
-                className="w-full text-left block px-3 py-2 rounded-md text-base font-medium text-red-500 hover:bg-red-100"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-      </nav>
-
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-black font-heading">Dashboard</h1>
-        </div>
-      </header>
-
-      <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
-            <div>
-              <h2 className="text-2xl font-bold text-black mb-6 font-heading">My Resumes</h2>
-              {documentsLoading ? (
-                <p>Loading documents...</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {resumes.map(resume => (
-                    <div key={resume.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-between">
-                      <h3 className="font-bold font-heading text-lg">{resume.data.full_name || 'Untitled Resume'}</h3>
-                      <p className="text-sm text-gray-500">Last updated: {new Date(resume.updated_at).toLocaleDateString()}</p>
-                      <div className="mt-4 flex justify-end space-x-2">
-                        <Link href={`/editor/${resume.template_id}?documentId=${resume.id}&type=resume`} className="text-sm bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Edit</Link>
-                        <button onClick={() => handleDelete(resume.id, 'resume')} className="text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Delete</button>
-                      </div>
-                    </div>
-                  ))}
+            <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-bold">✉️</span>
+                  </div>
                 </div>
-              )}
-            </div>
-
-            <div className="mt-10">
-              <h2 className="text-2xl font-bold text-black mb-6 font-heading">My Cover Letters</h2>
-              {documentsLoading ? (
-                <p>Loading documents...</p>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                  {coverLetters.map(letter => (
-                    <div key={letter.id} className="bg-white rounded-lg shadow-md p-4 flex flex-col justify-between">
-                      <h3 className="font-bold font-heading text-lg">{letter.data.full_name || 'Untitled Cover Letter'}</h3>
-                      <p className="text-sm text-gray-500">Last updated: {new Date(letter.updated_at).toLocaleDateString()}</p>
-                      <div className="mt-4 flex justify-end space-x-2">
-                        <Link href={`/editor/${letter.template_id}?documentId=${letter.id}&type=cover-letter`} className="text-sm bg-gray-200 px-3 py-1 rounded-md hover:bg-gray-300">Edit</Link>
-                        <button onClick={() => handleDelete(letter.id, 'cover-letter')} className="text-sm bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Delete</button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Cover Letters</p>
+                  <p className="text-2xl font-bold text-gray-900">{coverLetters.length}</p>
                 </div>
-              )}
+              </div>
+            </div>
+            <div className="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-bold">🎨</span>
+                  </div>
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-500">Templates Available</p>
+                  <p className="text-2xl font-bold text-gray-900">{templates.length}</p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="px-4 py-6 sm:px-0 mt-10">
-            <h2 className="text-2xl font-bold text-black mb-6 font-heading">Resume Templates</h2>
-            {templatesLoading ? (
-              <p>Loading templates...</p>
+          {/* Recent Documents */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Recent Documents</h2>
+              <Link href="/dashboard/documents" className="text-green-600 hover:text-green-700 font-medium">View all →</Link>
+            </div>
+            {documentsLoading ? (
+              <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+                <LoadingSpinner text="Loading documents..." />
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {templates.filter(t => t.type === 'resume').map(template => {
-                  const isPremium = template.is_premium;
-                  const canUse = !isPremium || (isPremium && user?.subscription === 'premium');
-
-                  const cardContent = (
-                    <div className={`bg-white rounded-lg shadow-md overflow-hidden group h-full ${!canUse ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                      <img src={template.preview_url} alt={template.name} className="w-full h-auto object-cover group-hover:opacity-75 transition-opacity" />
-                      <div className="p-4">
-                        <h3 className="font-bold font-heading text-lg">{template.name}</h3>
-                        {isPremium && (
-                          <span className="text-xs font-bold uppercase text-white bg-yellow-500 px-2 py-1 rounded-full mt-2 inline-block">Premium</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-
-                  if (canUse) {
-                    return (
-                      <Link href={`/editor/${template.id}`} key={template.id} className="block">
-                        {cardContent}
-                      </Link>
-                    );
-                  }
-
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...resumes.slice(0, 3), ...coverLetters.slice(0, 3)].slice(0, 6).map((doc: any, index) => {
+                  const isResume = resumes.includes(doc);
                   return (
-                    <div key={template.id} onClick={() => alert('Please upgrade to premium to use this template.')}>
-                      {cardContent}
+                    <div key={`${isResume ? 'resume' : 'cover-letter'}-${doc.id}`} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-6 border border-gray-200">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900 mb-1">{doc.data.full_name || `Untitled ${isResume ? 'Resume' : 'Cover Letter'}`}</h3>
+                          <p className="text-sm text-gray-500">{isResume ? 'Resume' : 'Cover Letter'}</p>
+                        </div>
+                        <span className={`px-2 py-1 text-xs rounded-full ${isResume ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+                          {isResume ? 'Resume' : 'Letter'}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-4">Updated {new Date(doc.updated_at).toLocaleDateString()}</p>
+                      <div className="flex space-x-2">
+                        <Link 
+                          href={`/editor/${doc.template_id}?documentId=${doc.id}&type=${isResume ? 'resume' : 'cover-letter'}`} 
+                          className="flex-1 bg-green-600 text-white text-center py-2 px-3 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
+                        >
+                          Edit
+                        </Link>
+                        {!isResume && (
+                          <button
+                            onClick={() => setViewingCoverLetter(doc.id)}
+                            className="px-3 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-colors text-sm font-medium"
+                          >
+                            👁️
+                          </button>
+                        )}
+                        <button 
+                          onClick={() => handleDelete(doc.id, isResume ? 'resume' : 'cover-letter')} 
+                          className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors text-sm"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -308,38 +263,49 @@ export default function Dashboard() {
             )}
           </div>
 
-          <div className="px-4 py-6 sm:px-0 mt-10">
-            <h2 className="text-2xl font-bold text-black mb-6 font-heading">Cover Letter Templates</h2>
-             {templatesLoading ? (
-              <p>Loading templates...</p>
+          {/* Popular Templates */}
+          <div>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Popular Templates</h2>
+              <Link href="/dashboard/templates" className="text-green-600 hover:text-green-700 font-medium">View all →</Link>
+            </div>
+            {templatesLoading ? (
+              <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+                <LoadingSpinner text="Loading templates..." />
+              </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {templates.filter(t => t.type === 'cover_letter').map(template => {
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {templates.slice(0, 4).map(template => {
                   const isPremium = template.is_premium;
                   const canUse = !isPremium || (isPremium && user?.subscription === 'premium');
 
                   const cardContent = (
-                    <div className={`bg-white rounded-lg shadow-md overflow-hidden group h-full ${!canUse ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
-                      <img src={template.preview_url} alt={template.name} className="w-full h-auto object-cover group-hover:opacity-75 transition-opacity" />
-                      <div className="p-4">
-                        <h3 className="font-bold font-heading text-lg">{template.name}</h3>
+                    <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-200 ${!canUse ? 'opacity-50' : ''}`}>
+                      <div className="aspect-[3/4] bg-gray-100 relative">
+                        <img src={template.preview_url} alt={template.name} className="w-full h-full object-cover" />
                         {isPremium && (
-                          <span className="text-xs font-bold uppercase text-white bg-yellow-500 px-2 py-1 rounded-full mt-2 inline-block">Premium</span>
+                          <div className="absolute top-2 right-2">
+                            <span className="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full">Premium</span>
+                          </div>
                         )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="font-semibold text-gray-900 mb-1">{template.name}</h3>
+                        <p className="text-sm text-gray-500 capitalize">{template.type.replace('_', ' ')}</p>
                       </div>
                     </div>
                   );
 
                   if (canUse) {
                     return (
-                      <Link href={`/editor/${template.id}`} key={template.id} className="block">
+                      <Link href={`/editor/${template.id}`} key={template.id}>
                         {cardContent}
                       </Link>
                     );
                   }
 
                   return (
-                    <div key={template.id} onClick={() => alert('Please upgrade to premium to use this template.')}>
+                    <div key={template.id} onClick={() => alert('Please upgrade to premium to use this template.')} className="cursor-pointer">
                       {cardContent}
                     </div>
                   );
@@ -349,6 +315,14 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Cover Letter Viewer Modal */}
+      {viewingCoverLetter && (
+        <CoverLetterViewer 
+          documentId={viewingCoverLetter}
+          onClose={() => setViewingCoverLetter(null)}
+        />
+      )}
     </div>
   );
 }
