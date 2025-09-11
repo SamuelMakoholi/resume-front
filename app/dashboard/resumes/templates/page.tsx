@@ -8,6 +8,7 @@ import React from 'react';
 import { ResumeData } from '@/app/lib/types';
 import Sidebar from '@/components/Sidebar';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import ResumeEditorInline from '@/components/ResumeEditorInline';
 
 // Enhanced sample data with more comprehensive content
 const sampleData: ResumeData = {
@@ -72,6 +73,7 @@ export default function TemplateSelectionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -126,8 +128,17 @@ export default function TemplateSelectionPage() {
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    console.log('Navigating to template:', templateId);
-    window.location.href = `/editor/${templateId}`;
+    console.log('Selecting template:', templateId);
+    
+    // Check if template exists
+    const template = templates.find(t => t.id === templateId);
+    if (!template) {
+      alert(`Template "${templateId}" not found!`);
+      return;
+    }
+    
+    // Navigate to create page with selected template
+    window.location.href = `/dashboard/resumes/create?template=${templateId}`;
   };
 
   if (isLoading || !user) {
@@ -138,6 +149,20 @@ export default function TemplateSelectionPage() {
     );
   }
   
+  // Show inline editor if template is selected
+  if (showEditor && selectedTemplate) {
+    const template = templates.find(t => t.id === selectedTemplate);
+    return (
+      <ResumeEditorInline 
+        template={template} 
+        onClose={() => {
+          setShowEditor(false);
+          setSelectedTemplate(null);
+        }} 
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <Sidebar user={user} onLogout={logout} />
@@ -225,9 +250,10 @@ export default function TemplateSelectionPage() {
                   </div>
                   <button 
                     onClick={() => handleTemplateSelect(template.id)}
-                    className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                    disabled={isNavigating && selectedTemplate === template.id}
+                    className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Use Template
+                    {isNavigating && selectedTemplate === template.id ? 'Loading...' : 'Use Template'}
                   </button>
                 </div>
               </div>

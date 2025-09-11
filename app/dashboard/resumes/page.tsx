@@ -187,7 +187,10 @@ export default function ResumesPage() {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-900 mb-1">
-                          {resume.data.full_name || 'Untitled Resume'}
+                          {resume.data.personal?.firstName && resume.data.personal?.lastName 
+                            ? `${resume.data.personal.firstName} ${resume.data.personal.lastName}` 
+                            : 'Untitled Resume'
+                          }
                         </h3>
                         <p className="text-sm text-gray-500">Resume</p>
                       </div>
@@ -200,7 +203,13 @@ export default function ResumesPage() {
                     </p>
                     <div className="flex space-x-2">
                       <Link 
-                        href={`/editor/${resume.template_id}?documentId=${resume.id}&type=resume`} 
+                        href={`/dashboard/resumes/view/${resume.id}`} 
+                        className="flex-1 bg-blue-600 text-white text-center py-2 px-3 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+                      >
+                        View
+                      </Link>
+                      <Link 
+                        href={`/dashboard/resumes/edit/${resume.id}`} 
                         className="flex-1 bg-green-600 text-white text-center py-2 px-3 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
                       >
                         Edit
@@ -223,7 +232,7 @@ export default function ResumesPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Create New Resume</h2>
               <Link
-                href="/dashboard/resumes/templates"
+                href="/dashboard/resumes/create"
                 className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center space-x-2"
               >
                 <span>➕</span>

@@ -1,12 +1,13 @@
 import ClassicTemplate from '@/app/components/resume-templates/ClassicTemplate';
 import ModernTemplate from '@/app/components/resume-templates/ModernTemplate';
+import ExecutiveTemplate from '@/app/components/resume-templates/ExecutiveTemplate';
 import { ComponentType } from 'react';
 import { ResumeData } from './types';
 
 export interface Template {
   id: string;
   name: string;
-  component: ComponentType<{ data: ResumeData }>;
+  component: ComponentType<{ data: ResumeData; fontFamily?: string }>;
 }
 
 export const templates: Template[] = [
@@ -19,6 +20,11 @@ export const templates: Template[] = [
     id: 'modern',
     name: 'Modern',
     component: ModernTemplate,
+  },
+  {
+    id: 'executive',
+    name: 'Executive',
+    component: ExecutiveTemplate,
   },
 ];
 

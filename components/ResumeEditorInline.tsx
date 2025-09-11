@@ -1,11 +1,8 @@
 'use client';
 
-import { getTemplateById } from '../../../app/lib/templates';
-import { useParams, useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react';
-import { ResumeData } from '../../../app/lib/types';
-import ResumeForm from '../../../components/ResumeForm';
-import Link from 'next/link';
+import React, { useState } from 'react';
+import { ResumeData } from '../app/lib/types';
+import ResumeForm from './ResumeForm';
 
 // Initial data for the form
 const initialData: ResumeData = {
@@ -66,94 +63,61 @@ const fontSizeOptions = [
   { name: 'Extra Large', headingBase: 22, bodyBase: 18 },
 ];
 
-const EditorPage = () => {
-  const params = useParams();
-  const router = useRouter();
-  const templateId = params.templateId as string;
+interface ResumeEditorInlineProps {
+  template: any;
+  onClose: () => void;
+}
+
+const ResumeEditorInline: React.FC<ResumeEditorInlineProps> = ({ template, onClose }) => {
   const [formData, setFormData] = useState<ResumeData>(initialData);
-  const [isLoading, setIsLoading] = useState(true);
   
   // Font settings state
   const [headingFont, setHeadingFont] = useState('Arial, sans-serif');
   const [bodyFont, setBodyFont] = useState('Georgia, serif');
   const [fontSize, setFontSize] = useState(fontSizeOptions[1]); // Medium by default
 
-  const [template, setTemplate] = useState<any>(null);
-
-  useEffect(() => {
-    console.log('Editor loading, templateId:', templateId);
-    try {
-      const foundTemplate = getTemplateById(templateId);
-      console.log('Found template:', foundTemplate);
-      setTemplate(foundTemplate);
-    } catch (error) {
-      console.error('Error loading template:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [templateId]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p>Loading editor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!template) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Template not found</h1>
-          <p className="mb-4">The requested template "{templateId}" could not be found.</p>
-          <button 
-            onClick={() => router.push('/dashboard/resumes/templates')}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          >
-            Back to Templates
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   const TemplateComponent = template.component;
 
   const handleFormSubmit = (data: ResumeData) => {
-    // Here you would typically save the data to a database
-    console.log('Form submitted:', data);
-    alert('Resume data saved! Check the console for the data.');
+    console.log('Resume data submitted:', data);
+    alert('Resume saved successfully! Check the console for the data.');
   };
 
   return (
-    <div className="flex flex-col h-screen">
-      {/* Black Navigation Bar */}
+    <div className="fixed inset-0 z-50 bg-white">
+      {/* Navigation Bar */}
       <nav className="bg-black text-white py-3 px-6 shadow-md">
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-6">
-            <Link href="/dashboard" className="flex items-center">
-              <span className="text-green-500 text-2xl font-bold">Resume Builder</span>
-            </Link>
+            <span className="text-green-500 text-2xl font-bold">Resume Builder</span>
+            <span className="text-sm text-gray-300">Editing: {template.name}</span>
           </div>
           
-          <button 
-            onClick={() => window.history.back()} 
-            className="text-sm bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-colors"
-          >
-            &larr; Back
-          </button>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={onClose}
+              className="text-sm bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded transition-colors"
+            >
+              ← Back to Templates
+            </button>
+            <button 
+              onClick={() => window.location.href = '/dashboard/resumes'}
+              className="text-sm bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-colors"
+            >
+              My Resumes
+            </button>
+          </div>
         </div>
       </nav>
       
       {/* Main Content */}
-      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+      <div className="flex h-[calc(100vh-64px)]">
         {/* Left Panel - Form */}
-        <div className="overflow-y-auto border-r border-gray-200 p-6">
-          <h1 className="text-xl font-bold mb-6">Editing: {template.name}</h1>
+        <div className="w-1/2 overflow-y-auto border-r border-gray-200 p-6 bg-white">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Resume Builder</h1>
+            <p className="text-gray-600">Fill out your information to create a professional resume.</p>
+          </div>
           <ResumeForm 
             formData={formData} 
             onDataChange={setFormData} 
@@ -162,7 +126,7 @@ const EditorPage = () => {
         </div>
         
         {/* Right Panel - Preview */}
-        <div className="bg-gray-50 overflow-y-auto p-6">
+        <div className="w-1/2 bg-gray-50 overflow-y-auto p-6">
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-4 text-center">Live Preview</h2>
             
@@ -209,7 +173,7 @@ const EditorPage = () => {
               {/* Font Size Selection */}
               <div className="mt-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-2">
                   {fontSizeOptions.map((option) => (
                     <button
                       key={option.name}
@@ -257,5 +221,4 @@ const EditorPage = () => {
   );
 };
 
-export default EditorPage;
-
+export default ResumeEditorInline;
