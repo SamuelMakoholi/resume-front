@@ -93,6 +93,7 @@ export default function Login() {
           const token = data.data.token;
           const user = data.data.user;
           
+          
           console.log('Storing token:', token);
           console.log('Storing user data:', user);
           

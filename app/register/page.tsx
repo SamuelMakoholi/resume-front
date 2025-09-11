@@ -107,10 +107,10 @@ export default function Register() {
         setIsSuccess(true);
         
         // Store token and user data - be flexible with response structure
-        if (data.token || data.access_token) {
-          const token = data.token || data.access_token;
-          const user = data.user || data.data || data;
-          
+        if (data.data && data.data.token) {
+          const token = data.data.token;
+          const user = data.data.user || data.data || data;
+
           console.log('Storing token:', token);
           console.log('Storing user data:', user);
           

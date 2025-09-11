@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from '../../../components/Sidebar';
 import LoadingSpinner from '../../../components/LoadingSpinner';
+import { templates } from '@/app/lib/templates';
+import { ResumeData } from '@/app/lib/types';
 
 interface User {
   id: number;
@@ -18,8 +20,6 @@ export default function ResumesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [resumes, setResumes] = useState<any[]>([]);
   const [resumesLoading, setResumesLoading] = useState(true);
-  const [templates, setTemplates] = useState<any[]>([]);
-  const [templatesLoading, setTemplatesLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -70,27 +70,7 @@ export default function ResumesPage() {
         }
       };
 
-      const fetchTemplates = async () => {
-        try {
-          setTemplatesLoading(true);
-          const token = localStorage.getItem('token');
-          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/templates`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/json',
-            }
-          });
-          const data = await response.json();
-          setTemplates(data.data || []);
-        } catch (error) {
-          console.error('Failed to fetch templates', error);
-        } finally {
-          setTemplatesLoading(false);
-        }
-      };
-
       fetchResumes();
-      fetchTemplates();
     }
   }, [user]);
 
@@ -128,7 +108,20 @@ export default function ResumesPage() {
     );
   }
 
-  const resumeTemplates = templates.filter(t => t.type === 'resume');
+  const resumeTemplates = templates; // We can add a 'type' to our local templates if needed in the future
+
+  // Sample data for template previews
+  const sampleData: ResumeData = {
+    personal: { firstName: 'John', lastName: 'Doe', title: 'Software Engineer', email: 'john.doe@example.com', phone: '123-456-7890', website: 'johndoe.com' },
+    summary: 'Experienced software engineer.',
+    experience: [{ title: 'Senior Engineer', company: 'Tech Corp', startDate: '2020', endDate: 'Present', responsibilities: ['Led projects.'] }],
+    education: [{ school: 'State University', degree: 'B.S. in CS', field: 'Computer Science', year: '2019' }],
+    skills: ['React', 'TypeScript', 'Node.js'],
+    projects: [],
+    achievements: [],
+    languages: [],
+    references: [],
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -230,57 +223,37 @@ export default function ResumesPage() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Create New Resume</h2>
               <Link
-                href="/editor/new?type=resume"
+                href="/dashboard/resumes/templates"
                 className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center space-x-2"
               >
                 <span>➕</span>
-                <span>Create Resume</span>
+                <span>Create New Resume</span>
               </Link>
             </div>
             <p className="text-gray-600 mb-6">Choose from our professional templates or start from scratch.</p>
-            {templatesLoading ? (
-              <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                <LoadingSpinner text="Loading templates..." />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {resumeTemplates.map(template => {
-                  const isPremium = template.is_premium;
-                  const canUse = !isPremium || (isPremium && user?.subscription === 'premium');
-
-                  const cardContent = (
-                    <div className={`bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-200 ${!canUse ? 'opacity-50' : ''}`}>
-                      <div className="aspect-[3/4] bg-gray-100 relative">
-                        <img src={template.preview_url} alt={template.name} className="w-full h-full object-cover" />
-                        {isPremium && (
-                          <div className="absolute top-2 right-2">
-                            <span className="bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded-full">Premium</span>
-                          </div>
-                        )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {resumeTemplates.map(template => {
+                const TemplateComponent = template.component;
+                return (
+                  <div 
+                    key={template.id} 
+                    className="block cursor-pointer" 
+                    onClick={() => router.push(`/editor/${template.id}`)}
+                  >
+                    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-200 h-full flex flex-col">
+                      <div className="aspect-[3/4] bg-gray-100 overflow-hidden flex-shrink-0">
+                        <div style={{ transform: 'scale(0.20)', transformOrigin: 'top left', width: '500%', height: '500%', pointerEvents: 'none' }}>
+                          <TemplateComponent data={sampleData} />
+                        </div>
                       </div>
-                      <div className="p-4">
-                        <h3 className="font-semibold text-gray-900 mb-1">{template.name}</h3>
-                        <p className="text-sm text-gray-500">Resume Template</p>
+                      <div className="p-4 flex-grow flex items-center justify-center">
+                        <h3 className="font-semibold text-gray-900 text-center">{template.name}</h3>
                       </div>
                     </div>
-                  );
-
-                  if (canUse) {
-                    return (
-                      <Link href={`/editor/${template.id}`} key={template.id}>
-                        {cardContent}
-                      </Link>
-                    );
-                  }
-
-                  return (
-                    <div key={template.id} onClick={() => alert('Please upgrade to premium to use this template.')} className="cursor-pointer">
-                      {cardContent}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </main>
