@@ -99,6 +99,7 @@ export default function CreateResumePage() {
       'classic': 1,    // Classic Resume
       'modern': 2,     // Modern Resume  
       'executive': 3,  // Executive Resume
+      'creative': 4,   // Creative Resume
     };
     return templateMapping[frontendTemplateId] || 1;
   };

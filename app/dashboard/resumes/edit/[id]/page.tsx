@@ -126,6 +126,7 @@ export default function EditResumePage() {
       'classic': 1,    // Classic Resume
       'modern': 2,     // Modern Resume
       'executive': 3,  // Executive Resume
+      'creative': 4,   // Creative Resume
     };
     return templateMapping[frontendTemplateId] || 1;
   };
@@ -187,7 +188,7 @@ export default function EditResumePage() {
       if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
         alert('Connection error: Unable to reach the server. Please check:\n1. Your internet connection\n2. If the server is running\n3. If the API URL is correct');
       } else {
-        alert(`Failed to update resume: ${error.message}`);
+        alert(`Failed to update resume: ${error instanceof Error ? error.message : String(error)}`);
       }
     } finally {
       setIsSaving(false);

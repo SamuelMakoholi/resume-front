@@ -191,7 +191,29 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, fontFamily = 'Int
                       <p style={styles.dates}>{job.startDate} - {job.endDate}</p>
                     </div>
                   </div>
-                  {job.responsibilities.length > 0 && (
+                  {job.responsibilitiesHtml ? (
+                    <div style={styles.responsibilities}>
+                      <style dangerouslySetInnerHTML={{ __html: `
+                        .resume-html-content ul {
+                          list-style-type: disc !important;
+                          padding-left: 1.25rem !important;
+                          margin: 0.25rem 0 !important;
+                        }
+                        .resume-html-content ol {
+                          list-style-type: decimal !important;
+                          padding-left: 1.25rem !important;
+                          margin: 0.25rem 0 !important;
+                        }
+                        .resume-html-content li {
+                          margin-bottom: 0.25rem !important;
+                        }
+                      `}} />
+                      <div 
+                        className="resume-html-content"
+                        dangerouslySetInnerHTML={{ __html: job.responsibilitiesHtml }}
+                      />
+                    </div>
+                  ) : job.responsibilities.length > 0 && (
                     <ul style={styles.responsibilities}>
                       {job.responsibilities.map((resp: string, i: number) => (
                         <li key={i} style={styles.responsibility}>• {resp}</li>

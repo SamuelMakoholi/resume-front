@@ -13,6 +13,7 @@ export interface Experience {
   startDate: string;
   endDate: string;
   responsibilities: string[];
+  responsibilitiesHtml?: string; // HTML content for rich text responsibilities
 }
 
 export interface Education {

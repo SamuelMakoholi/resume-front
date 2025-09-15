@@ -243,13 +243,13 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
 
     skills.forEach(skill => {
       const lower = skill.toLowerCase();
-      if (lower.includes('javascript') || lower.includes('python') || lower.includes('react') || 
-          lower.includes('node') || lower.includes('sql') || lower.includes('aws') ||
-          lower.includes('docker') || lower.includes('api') || lower.includes('database') ||
-          lower.includes('html') || lower.includes('css') || lower.includes('typescript')) {
+      if (lower.includes('javascript') || lower.includes('python') || lower.includes('react') ||
+        lower.includes('node') || lower.includes('sql') || lower.includes('aws') ||
+        lower.includes('docker') || lower.includes('api') || lower.includes('database') ||
+        lower.includes('html') || lower.includes('css') || lower.includes('typescript')) {
         categories['Technical'].push(skill);
       } else if (lower.includes('management') || lower.includes('leadership') || lower.includes('team') ||
-                 lower.includes('project') || lower.includes('strategy') || lower.includes('planning')) {
+        lower.includes('project') || lower.includes('strategy') || lower.includes('planning')) {
         categories['Leadership'].push(skill);
       } else {
         categories['Other'].push(skill);
@@ -317,7 +317,29 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
                     <div>{job.startDate} - {job.endDate}</div>
                   </div>
                 </div>
-                {job.responsibilities.length > 0 && (
+                {job.responsibilitiesHtml ? (
+                  <div style={styles.responsibilities}>
+                    <style dangerouslySetInnerHTML={{ __html: `
+                      .resume-html-content ul {
+                        list-style-type: disc !important;
+                        padding-left: 1.5rem !important;
+                        margin: 0.5rem 0 !important;
+                      }
+                      .resume-html-content ol {
+                        list-style-type: decimal !important;
+                        padding-left: 1.5rem !important;
+                        margin: 0.5rem 0 !important;
+                      }
+                      .resume-html-content li {
+                        margin-bottom: 0.25rem !important;
+                      }
+                    `}} />
+                    <div 
+                      className="resume-html-content"
+                      dangerouslySetInnerHTML={{ __html: job.responsibilitiesHtml }}
+                    />
+                  </div>
+                ) : job.responsibilities.length > 0 && (
                   <ul style={styles.responsibilities}>
                     {job.responsibilities.map((resp: string, i: number) => (
                       <li key={i} style={styles.responsibility}>

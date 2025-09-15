@@ -1,10 +1,9 @@
 'use client';
 
-'use client';
-
 import { useState } from 'react';
 import { ResumeData, Experience, Education } from '@/app/lib/types';
 import InputField from './InputField';
+import SimpleRichTextEditor from './SimpleRichTextEditor';
 
 interface ResumeFormProps {
   formData: ResumeData;
@@ -79,6 +78,18 @@ export default function ResumeForm({ formData, onDataChange, onSubmit, isLoading
     const { name, value } = e.target;
     const newExperience = [...formData.experience];
     newExperience[index] = { ...newExperience[index], [name]: value };
+    onDataChange({ ...formData, experience: newExperience });
+  };
+  
+  const handleResponsibilitiesChange = (index: number, htmlContent: string) => {
+    const newExperience = [...formData.experience];
+    // Store the HTML content as a single string in the responsibilities array
+    newExperience[index] = { 
+      ...newExperience[index], 
+      responsibilitiesHtml: htmlContent,
+      // Keep a simplified version in the responsibilities array for backward compatibility
+      responsibilities: htmlContent ? [htmlContent.replace(/<[^>]*>/g, '')] : []
+    };
     onDataChange({ ...formData, experience: newExperience });
   };
 
@@ -234,17 +245,11 @@ export default function ResumeForm({ formData, onDataChange, onSubmit, isLoading
                   <InputField label="End Date" name="endDate" value={exp.endDate} onChange={(e) => handleExperienceChange(index, e)} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Responsibilities (comma-separated)</label>
-                  <textarea
-                    name="responsibilities"
-                    value={Array.isArray(exp.responsibilities) ? exp.responsibilities.join(', ') : ''}
-                    onChange={(e) => {
-                        const newExperience = [...formData.experience];
-                        newExperience[index] = { ...newExperience[index], responsibilities: e.target.value.split(',').map(s => s.trim()) };
-                        onDataChange({ ...formData, experience: newExperience });
-                    }}
-                    rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Responsibilities</label>
+                  <SimpleRichTextEditor
+                    value={exp.responsibilitiesHtml || ''}
+                    onChange={(htmlContent) => handleResponsibilitiesChange(index, htmlContent)}
+                    placeholder="Add job responsibilities with formatting..."
                   />
                 </div>
                 <button type="button" onClick={() => removeExperience(index)} className="text-red-500 hover:text-red-700 text-sm font-medium">Remove Experience</button>
