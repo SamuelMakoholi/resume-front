@@ -326,24 +326,30 @@ export default function ResumeForm({ formData, onDataChange, onSubmit, isLoading
           <div className="p-6 space-y-4">
             {formData.languages.map((lang, index) => (
               <div key={index} className="p-4 border rounded-lg space-y-4">
-                <InputField label="Language" name="name" value={lang.name} onChange={(e) => handleLanguageChange(index, e)} />
+                <InputField 
+                  label="Language" 
+                  name="name" 
+                  value={lang.name} 
+                  onChange={(e) => handleLanguageChange(index, e)}
+                  className="transition-all duration-200 focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                />
                 <div>
                   <label htmlFor={`proficiency-${index}`} className="block text-sm font-medium text-gray-700 mb-2">Proficiency</label>
-                  <select 
+                  <select
                     id={`proficiency-${index}`}
                     name="proficiency"
                     value={lang.proficiency}
                     onChange={(e) => handleLanguageChange(index, e)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
                   >
-                    <option>Beginner</option>
-                    <option>Intermediate</option>
-                    <option>Advanced</option>
-                    <option>Fluent</option>
-                    <option>Native</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                    <option value="Fluent">Fluent</option>
+                    <option value="Native">Native</option>
                   </select>
                 </div>
-                <button type="button" onClick={() => removeLanguage(index)} className="text-red-500 hover:text-red-700 text-sm font-medium">Remove Language</button>
+                <button type="button" onClick={() => removeLanguage(index)} className="text-red-500 hover:text-red-700 text-sm font-medium transition-colors">Remove Language</button>
               </div>
             ))}
             <button type="button" onClick={addLanguage} className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg transition-colors">+ Add Language</button>

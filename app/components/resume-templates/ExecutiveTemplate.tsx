@@ -6,82 +6,123 @@ interface ExecutiveTemplateProps {
   fontFamily?: string;
 }
 
-const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily = 'Calibri, sans-serif' }) => {
+const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily = 'Inter, sans-serif' }) => {
   const styles = {
     container: {
       fontFamily,
-      maxWidth: '8.5in',
-      minHeight: '11in',
+      width: '210mm',
+      minHeight: '297mm',
+      maxWidth: '210mm',
       margin: '0 auto',
-      backgroundColor: 'white',
-      fontSize: '11pt',
-      color: '#2c2c2c',
-      lineHeight: '1.4',
-      display: 'flex',
-      flexDirection: 'column' as const
+      padding: '0',
+      backgroundColor: '#fafafa',
+      lineHeight: '1.6',
+      fontSize: '10pt',
+      color: '#1a1a1a',
+      position: 'relative' as const,
+      boxSizing: 'border-box' as const,
+      overflow: 'hidden'
     },
     header: {
-      backgroundColor: '#1a365d',
+      background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
       color: 'white',
-      padding: '2.5rem 2rem 2rem 2rem',
-      textAlign: 'center' as const,
-      position: 'relative' as const
+      padding: '50px 40px',
+      position: 'relative' as const,
+      overflow: 'hidden'
+    },
+    headerOverlay: {
+      position: 'absolute' as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
+      zIndex: 1
+    },
+    headerContent: {
+      position: 'relative' as const,
+      zIndex: 2,
+      textAlign: 'center' as const
     },
     name: {
-      fontSize: '32pt',
-      fontWeight: '300',
-      margin: '0 0 0.5rem 0',
-      letterSpacing: '2px',
-      textTransform: 'uppercase' as const
+      fontSize: '36pt',
+      fontWeight: '200',
+      margin: '0 0 12px 0',
+      color: 'white',
+      letterSpacing: '4px',
+      textShadow: '0 2px 4px rgba(0,0,0,0.3)'
     },
     title: {
       fontSize: '16pt',
-      margin: '0 0 1.5rem 0',
-      color: '#a2d2ff',
-      fontWeight: '400',
+      margin: '0 0 25px 0',
+      color: 'rgba(255,255,255,0.95)',
+      fontWeight: '300',
       letterSpacing: '1px'
     },
     contact: {
-      fontSize: '11pt',
-      margin: 0,
       display: 'flex',
       justifyContent: 'center',
-      gap: '2rem',
+      gap: '30px',
+      fontSize: '11pt',
       flexWrap: 'wrap' as const,
-      color: '#e8f4fd'
+      color: 'rgba(255,255,255,0.9)'
     },
     contactItem: {
       display: 'flex',
       alignItems: 'center',
       gap: '0.5rem'
     },
-    body: {
-      flex: 1,
-      padding: '0 2rem 2rem 2rem'
+    mainContent: {
+      padding: '40px',
+      backgroundColor: 'white',
+      margin: '0 20px 20px 20px',
+      borderRadius: '8px',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
     },
     section: {
-      marginBottom: '2rem',
-      borderBottom: '1px solid #e5e5e5',
-      paddingBottom: '1.5rem'
+      marginBottom: '35px'
     },
     sectionTitle: {
       fontSize: '14pt',
       fontWeight: '600',
-      color: '#1a365d',
-      marginBottom: '1rem',
-      paddingBottom: '0.5rem',
+      color: '#1e3c72',
+      marginBottom: '20px',
+      paddingBottom: '8px',
+      borderBottom: '3px solid #1e3c72',
       textTransform: 'uppercase' as const,
-      letterSpacing: '1px',
-      borderBottom: '2px solid #1a365d',
-      display: 'inline-block'
+      letterSpacing: '2px',
+      position: 'relative' as const
+    },
+    sectionTitleAccent: {
+      position: 'absolute' as const,
+      bottom: '-3px',
+      left: '0',
+      width: '60px',
+      height: '3px',
+      background: 'linear-gradient(90deg, #2a5298, #1e3c72)',
+      borderRadius: '2px'
     },
     summary: {
-      fontSize: '12pt',
-      lineHeight: '1.6',
-      margin: 0,
-      color: '#4a5568',
-      fontStyle: 'italic',
-      textAlign: 'justify' as const
+      fontSize: '11pt',
+      lineHeight: '1.8',
+      color: '#333333',
+      textAlign: 'justify' as const,
+      padding: '25px',
+      backgroundColor: '#f8f9fa',
+      borderRadius: '8px',
+      border: '1px solid #e9ecef',
+      fontStyle: 'italic' as const,
+      position: 'relative' as const
+    },
+    summaryQuote: {
+      position: 'absolute' as const,
+      top: '10px',
+      left: '15px',
+      fontSize: '40pt',
+      color: '#1e3c72',
+      opacity: 0.3,
+      fontFamily: 'Georgia, serif',
+      lineHeight: '1'
     },
     jobHeader: {
       display: 'flex',
@@ -89,24 +130,36 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
       alignItems: 'flex-start',
       marginBottom: '0.75rem'
     },
+    experienceItem: {
+      marginBottom: '30px',
+      padding: '25px',
+      backgroundColor: '#f8f9fa',
+      borderRadius: '8px',
+      borderLeft: '4px solid #1e3c72',
+      position: 'relative' as const
+    },
     jobTitle: {
-      fontSize: '13pt',
-      fontWeight: '600',
-      margin: 0,
-      color: '#1a365d'
+      fontSize: '14pt',
+      fontWeight: '700',
+      margin: '0 0 6px 0',
+      color: '#1e3c72'
     },
     company: {
       fontSize: '12pt',
-      fontWeight: '500',
-      color: '#2d3748',
-      margin: '0.25rem 0 0 0'
+      fontWeight: '600',
+      color: '#2a5298',
+      margin: '0 0 8px 0'
     },
     dates: {
       fontSize: '10pt',
-      color: '#718096',
+      color: '#666666',
       fontWeight: '500',
-      textAlign: 'right' as const,
-      lineHeight: '1.2'
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.5px',
+      backgroundColor: '#e9ecef',
+      padding: '4px 12px',
+      borderRadius: '20px',
+      display: 'inline-block'
     },
     responsibilities: {
       margin: '0.75rem 0 1.5rem 0',
@@ -131,26 +184,33 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
       borderRadius: '50%'
     },
     education: {
-      marginBottom: '1rem'
-    },
-    educationHeader: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start'
+      marginBottom: '20px',
+      padding: '20px',
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      border: '1px solid #e9ecef',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
     },
     degree: {
       fontSize: '12pt',
-      fontWeight: '600',
-      margin: 0,
-      color: '#1a365d'
+      fontWeight: '700',
+      margin: '0 0 4px 0',
+      color: '#1e3c72'
     },
     school: {
       fontSize: '11pt',
-      color: '#2d3748',
-      margin: '0.25rem 0 0 0',
-      fontWeight: '500'
+      color: '#2a5298',
+      margin: '0 0 4px 0',
+      fontWeight: '600'
     },
-    skillsContainer: {
+    year: {
+      fontSize: '9pt',
+      color: '#666666',
+      fontWeight: '500',
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.5px'
+    },
+    skillsGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
       gap: '1rem'
@@ -169,10 +229,13 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
       textTransform: 'uppercase' as const,
       letterSpacing: '0.5px'
     },
-    skillsList: {
+    skills: {
       fontSize: '10pt',
       lineHeight: '1.4',
       color: '#4a5568'
+    },
+    skill: {
+      marginRight: '10px'
     },
     projectsGrid: {
       display: 'grid',
@@ -189,7 +252,7 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
       fontSize: '12pt',
       fontWeight: '600',
       margin: '0 0 0.5rem 0',
-      color: '#1a365d'
+      color: '#1e3c72'
     },
     projectUrl: {
       fontSize: '10pt',
@@ -208,29 +271,43 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
       gridTemplateColumns: '1fr 1fr',
       gap: '2rem'
     },
+    achievements: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+      gap: '20px',
+      marginTop: '20px'
+    },
+    achievementItem: {
+      padding: '20px',
+      backgroundColor: 'white',
+      borderRadius: '8px',
+      border: '1px solid #e9ecef',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+      borderLeft: '4px solid #2a5298'
+    },
     languagesGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-      gap: '0.75rem'
+      gap: '15px',
+      marginTop: '15px'
     },
     language: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '0.5rem 0.75rem',
-      backgroundColor: '#f0fff4',
-      borderRadius: '4px',
-      border: '1px solid #c6f6d5'
+      padding: '15px',
+      backgroundColor: '#f8f9fa',
+      borderRadius: '8px',
+      border: '1px solid #e9ecef'
     },
     languageName: {
-      fontSize: '10pt',
+      fontSize: '11pt',
       fontWeight: '600',
-      color: '#1a365d'
+      color: '#1e3c72',
+      display: 'block',
+      marginBottom: '4px'
     },
     proficiency: {
       fontSize: '9pt',
-      color: '#38a169',
-      fontWeight: '500'
+      color: '#666666',
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.5px'
     }
   };
 
@@ -264,57 +341,54 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
   return (
     <div style={styles.container}>
       {/* Header */}
-      <header style={styles.header}>
-        <h1 style={styles.name}>
-          {data.personal.firstName} {data.personal.lastName}
-        </h1>
-        {data.personal.title && (
-          <p style={styles.title}>{data.personal.title}</p>
-        )}
-        <div style={styles.contact}>
-          {data.personal.email && (
-            <div style={styles.contactItem}>
-              <span>✉</span>
-              <span>{data.personal.email}</span>
-            </div>
+      <div style={styles.header}>
+        <div style={styles.headerOverlay}></div>
+        <div style={styles.headerContent}>
+          <h1 style={styles.name}>
+            {data.personal.firstName} {data.personal.lastName}
+          </h1>
+          {data.personal.title && (
+            <p style={styles.title}>{data.personal.title}</p>
           )}
-          {data.personal.phone && (
-            <div style={styles.contactItem}>
-              <span>✆</span>
-              <span>{data.personal.phone}</span>
-            </div>
-          )}
-          {data.personal.website && (
-            <div style={styles.contactItem}>
-              <span>🌐</span>
-              <span>{data.personal.website}</span>
-            </div>
-          )}
+          <div style={styles.contact}>
+            {data.personal.email && <span>{data.personal.email}</span>}
+            {data.personal.phone && <span>{data.personal.phone}</span>}
+            {data.personal.website && <span>{data.personal.website}</span>}
+          </div>
         </div>
-      </header>
+      </div>
 
-      <div style={styles.body}>
+      <div style={styles.mainContent}>
         {/* Executive Summary */}
         {data.summary && (
           <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>Executive Summary</h2>
-            <p style={styles.summary}>{data.summary}</p>
+            <h2 style={styles.sectionTitle}>
+              Executive Summary
+              <div style={styles.sectionTitleAccent}></div>
+            </h2>
+            <div style={styles.summary}>
+              <div style={styles.summaryQuote}>"</div>
+              <p style={{ margin: 0, paddingLeft: '30px' }}>{data.summary}</p>
+            </div>
           </section>
         )}
 
         {/* Professional Experience */}
         {data.experience.length > 0 && (
           <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>Professional Experience</h2>
+            <h2 style={styles.sectionTitle}>
+              Professional Experience
+              <div style={styles.sectionTitleAccent}></div>
+            </h2>
             {data.experience.map((job: Experience, index: number) => (
-              <div key={index} style={{ marginBottom: '2rem' }}>
-                <div style={styles.jobHeader}>
+              <div key={index} style={styles.experienceItem}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <div>
                     <h3 style={styles.jobTitle}>{job.title}</h3>
                     <p style={styles.company}>{job.company}</p>
                   </div>
-                  <div style={styles.dates}>
-                    <div>{job.startDate} - {job.endDate}</div>
+                  <div>
+                    <span style={styles.dates}>{job.startDate} - {job.endDate}</span>
                   </div>
                 </div>
                 {job.responsibilitiesHtml ? (
@@ -358,17 +432,16 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
         <div style={styles.twoColumnSection}>
           {/* Education */}
           {data.education.length > 0 && (
-            <section>
-              <h2 style={styles.sectionTitle}>Education</h2>
+            <section style={styles.section}>
+              <h2 style={styles.sectionTitle}>
+                Education
+                <div style={styles.sectionTitleAccent}></div>
+              </h2>
               {data.education.map((edu: Education, index: number) => (
                 <div key={index} style={styles.education}>
-                  <div style={styles.educationHeader}>
-                    <div>
-                      <h3 style={styles.degree}>{edu.degree} in {edu.field}</h3>
-                      <p style={styles.school}>{edu.school}</p>
-                    </div>
-                    <div style={styles.dates}>{edu.year}</div>
-                  </div>
+                  <h3 style={styles.degree}>{edu.degree} in {edu.field}</h3>
+                  <p style={styles.school}>{edu.school}</p>
+                  <p style={styles.year}>{edu.year}</p>
                 </div>
               ))}
             </section>
@@ -376,41 +449,97 @@ const ExecutiveTemplate: React.FC<ExecutiveTemplateProps> = ({ data, fontFamily 
 
           {/* Core Skills */}
           {data.skills.length > 0 && (
-            <section>
-              <h2 style={styles.sectionTitle}>Core Competencies</h2>
-              <div style={styles.skillsContainer}>
-                {Object.entries(skillCategories).map(([category, skills]) => (
-                  skills.length > 0 && (
-                    <div key={category} style={styles.skillCategory}>
-                      <h4 style={styles.skillCategoryTitle}>{category}</h4>
-                      <div style={styles.skillsList}>
-                        {skills.join(' • ')}
-                      </div>
-                    </div>
-                  )
-                ))}
+            <section style={styles.section}>
+              <h2 style={styles.sectionTitle}>
+                Core Competencies
+                <div style={styles.sectionTitleAccent}></div>
+              </h2>
+              <div style={styles.skillsGrid}>
+                <div style={styles.skillCategory}>
+                  <div style={styles.skillCategoryTitle}>Technical Skills</div>
+                  <div style={styles.skills}>
+                    {data.skills.slice(0, Math.ceil(data.skills.length / 2)).map((skill, index) => (
+                      <span key={index} style={styles.skill}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div style={styles.skillCategory}>
+                  <div style={styles.skillCategoryTitle}>Leadership Skills</div>
+                  <div style={styles.skills}>
+                    {data.skills.slice(Math.ceil(data.skills.length / 2)).map((skill, index) => (
+                      <span key={index} style={styles.skill}>
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </section>
           )}
         </div>
 
-        {/* Projects */}
-        {data.projects?.length > 0 && (
+        {/* Achievements */}
+        {data.achievements?.length > 0 && (
           <section style={styles.section}>
-            <h2 style={styles.sectionTitle}>Key Projects & Initiatives</h2>
-            <div style={styles.projectsGrid}>
-              {data.projects.map((project, index) => (
-                <div key={index} style={styles.project}>
-                  <h3 style={styles.projectName}>{project.name}</h3>
-                  {project.url && (
-                    <a href={project.url} style={styles.projectUrl}>
-                      {project.url}
-                    </a>
-                  )}
-                  <p style={styles.projectDescription}>{project.description}</p>
+            <h2 style={styles.sectionTitle}>
+              Key Achievements
+              <div style={styles.sectionTitleAccent}></div>
+            </h2>
+            <div style={styles.achievements}>
+              {data.achievements.map((achievement, index) => (
+                <div key={index} style={styles.achievementItem}>
+                  <p style={{ margin: 0, fontSize: '10pt', lineHeight: '1.6', color: '#333333' }}>
+                    {achievement}
+                  </p>
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Projects */}
+        {data.projects?.length > 0 && (
+          <section style={styles.section}>
+            <h2 style={styles.sectionTitle}>
+              Strategic Projects
+              <div style={styles.sectionTitleAccent}></div>
+            </h2>
+            {data.projects.map((project, index) => (
+              <div key={index} style={{
+                marginBottom: '20px',
+                padding: '20px',
+                backgroundColor: 'white',
+                borderRadius: '8px',
+                border: '1px solid #e9ecef',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                borderLeft: '4px solid #2a5298'
+              }}>
+                <h3 style={{
+                  fontSize: '12pt',
+                  fontWeight: '700',
+                  margin: '0 0 8px 0',
+                  color: '#1e3c72'
+                }}>{project.name}</h3>
+                <p style={{
+                  fontSize: '10pt',
+                  lineHeight: '1.6',
+                  color: '#333333',
+                  margin: '0'
+                }}>{project.description}</p>
+                {project.url && (
+                  <p style={{
+                    fontSize: '9pt',
+                    color: '#666666',
+                    margin: '8px 0 0 0',
+                    fontStyle: 'italic' as const
+                  }}>
+                    {project.url}
+                  </p>
+                )}
+              </div>
+            ))}
           </section>
         )}
 

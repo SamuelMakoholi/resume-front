@@ -39,6 +39,7 @@ const fontOptions = [
   { value: 'Arial, sans-serif', label: 'Arial (Sans-serif)' },
   { value: 'Helvetica, sans-serif', label: 'Helvetica (Sans-serif)' },
   { value: 'Inter, sans-serif', label: 'Inter (Sans-serif)' },
+  { value: 'Poppins, sans-serif', label: 'Poppins (Sans-serif)' },
   { value: 'Calibri, sans-serif', label: 'Calibri (Sans-serif)' },
   { value: 'Open Sans, sans-serif', label: 'Open Sans (Sans-serif)' },
   { value: 'Roboto, sans-serif', label: 'Roboto (Sans-serif)' }
@@ -48,6 +49,7 @@ export default function CreateResumePage() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('classic');
   const [selectedFont, setSelectedFont] = useState<string>('Georgia, serif');
   const [formData, setFormData] = useState<ResumeData>(initialData);
@@ -100,6 +102,7 @@ export default function CreateResumePage() {
       'modern': 2,     // Modern Resume  
       'executive': 3,  // Executive Resume
       'creative': 4,   // Creative Resume
+      'software-developer': 5, // Software Developer Resume
     };
     return templateMapping[frontendTemplateId] || 1;
   };
@@ -254,15 +257,39 @@ export default function CreateResumePage() {
         </div>
 
         {/* Preview Panel */}
-        <div className="w-1/2 bg-gray-50 overflow-y-auto p-6">
+        <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white' : 'w-1/2'} bg-gray-50 overflow-y-auto p-6`}>
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-2 text-center">Live Preview</h2>
-            <p className="text-gray-600 text-center text-sm">See your resume update in real-time</p>
+            <div className="flex items-center justify-between">
+              <div className="text-center flex-1">
+                <h2 className="text-xl font-bold text-gray-900 mb-2">Live Preview</h2>
+                <p className="text-gray-600 text-sm">See your resume update in real-time</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setIsFullscreen(!isFullscreen)}
+                  className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors"
+                  title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+                >
+                  {isFullscreen ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M5.5 0a.5.5 0 0 1 .5.5v4A1.5 1.5 0 0 1 4.5 6h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5zM10 .5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 10 .5zm.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 1 .5-.5zM0 10.5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 6 11.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M1.5 1a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4A1.5 1.5 0 0 1 1.5 0h4a.5.5 0 0 1 0 1h-4zM10 .5a.5.5 0 0 1 .5-.5h4A1.5 1.5 0 0 1 16 1.5v4a.5.5 0 0 1-1 0v-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 1-.5-.5zM.5 10a.5.5 0 0 1 .5.5v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 0 14.5v-4a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v4a1.5 1.5 0 0 1-1.5 1.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 0 .5-.5v-4a.5.5 0 0 1 .5-.5z"/>
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
           
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
             {TemplateComponent ? (
               <div className="p-6">
+                <style jsx global>{`
+                  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
+                `}</style>
                 <TemplateComponent data={formData} fontFamily={selectedFont} />
               </div>
             ) : (

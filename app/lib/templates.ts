@@ -2,6 +2,7 @@ import ClassicTemplate from '@/app/components/resume-templates/ClassicTemplate';
 import ModernTemplate from '@/app/components/resume-templates/ModernTemplate';
 import ExecutiveTemplate from '@/app/components/resume-templates/ExecutiveTemplate';
 import CreativeTemplate from '@/app/components/resume-templates/CreativeTemplate';
+import SoftwareDeveloperTemplate from '@/app/components/resume-templates/SoftwareDeveloperTemplate';
 import { ComponentType } from 'react';
 import { ResumeData } from './types';
 
@@ -31,6 +32,11 @@ export const templates: Template[] = [
     id: 'creative',
     name: 'Creative',
     component: CreativeTemplate,
+  },
+  {
+    id: 'software-developer',
+    name: 'Software Developer',
+    component: SoftwareDeveloperTemplate,
   },
 ];
 

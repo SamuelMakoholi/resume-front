@@ -10,33 +10,37 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
   const styles = {
     container: {
       fontFamily,
-      maxWidth: '8.5in',
-      minHeight: '11in',
+      width: '210mm', // A4 width
+      minHeight: '297mm', // A4 height
+      maxWidth: '210mm',
       margin: '0 auto',
-      padding: '0.75in',
+      padding: '20mm 15mm', // Professional margins
       backgroundColor: 'white',
-      lineHeight: '1.4',
+      lineHeight: '1.5',
       fontSize: '11pt',
-      color: '#333'
+      color: '#2c3e50',
+      boxSizing: 'border-box' as const,
+      overflow: 'hidden'
     },
     header: {
       textAlign: 'center' as const,
-      marginBottom: '1.5rem',
-      paddingBottom: '1rem',
-      borderBottom: '2px solid #2c3e50'
+      marginBottom: '25px',
+      paddingBottom: '15px',
+      borderBottom: '1px solid #2c3e50'
     },
     name: {
-      fontSize: '26pt',
-      fontWeight: 'bold',
-      margin: '0 0 0.5rem 0',
+      fontSize: '24pt',
+      fontWeight: '700',
+      margin: '0 0 8px 0',
       color: '#2c3e50',
-      letterSpacing: '1px'
+      letterSpacing: '0.5px',
+      textTransform: 'uppercase' as const
     },
     title: {
-      fontSize: '14pt',
-      margin: '0 0 1rem 0',
+      fontSize: '13pt',
+      margin: '0 0 12px 0',
       color: '#34495e',
-      fontWeight: '500'
+      fontWeight: '400'
     },
     contact: {
       fontSize: '10pt',
@@ -44,33 +48,34 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
       color: '#7f8c8d',
       display: 'flex',
       justifyContent: 'center',
-      gap: '1rem',
+      gap: '15px',
       flexWrap: 'wrap' as const
     },
     section: {
-      marginBottom: '1.5rem'
+      marginBottom: '20px'
     },
     sectionTitle: {
-      fontSize: '14pt',
-      fontWeight: 'bold',
+      fontSize: '13pt',
+      fontWeight: '600',
+      marginBottom: '12px',
       color: '#2c3e50',
-      marginBottom: '0.75rem',
-      paddingBottom: '0.25rem',
-      borderBottom: '1px solid #bdc3c7',
       textTransform: 'uppercase' as const,
-      letterSpacing: '0.5px'
+      letterSpacing: '0.8px',
+      borderBottom: '1px solid #bdc3c7',
+      paddingBottom: '4px'
     },
     jobTitle: {
       fontSize: '12pt',
-      fontWeight: 'bold',
-      margin: '0 0 0.25rem 0',
+      fontWeight: '600',
+      margin: '0 0 4px 0',
       color: '#2c3e50'
     },
     company: {
       fontSize: '11pt',
-      fontWeight: 'bold',
+      fontWeight: '500',
       color: '#34495e',
-      margin: 0
+      fontStyle: 'italic' as const,
+      margin: '4px 0 8px 0'
     },
     dates: {
       fontSize: '10pt',
@@ -79,13 +84,14 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
       margin: '0.25rem 0 0.5rem 0'
     },
     responsibilities: {
-      margin: '0.5rem 0 1rem 0',
-      paddingLeft: '1.25rem'
+      margin: '8px 0 15px 0',
+      paddingLeft: '18px'
     },
     responsibility: {
       fontSize: '10pt',
-      marginBottom: '0.25rem',
-      lineHeight: '1.3'
+      lineHeight: '1.5',
+      marginBottom: '4px',
+      color: '#2c3e50'
     },
     education: {
       marginBottom: '0.75rem'
@@ -101,11 +107,11 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
       color: '#34495e',
       margin: '0.25rem 0'
     },
-    skillsGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '0.5rem',
-      fontSize: '10pt'
+    skillsList: {
+      display: 'flex',
+      flexWrap: 'wrap' as const,
+      gap: '8px',
+      marginTop: '8px'
     },
     skill: {
       padding: '0.25rem 0.5rem',
@@ -146,8 +152,8 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
         <section style={styles.section}>
           <h2 style={styles.sectionTitle}>Professional Experience</h2>
           {data.experience.map((job: Experience, index: number) => (
-            <div key={index} style={{ marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div key={index} style={{ marginBottom: '18px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                 <div>
                   <h3 style={styles.jobTitle}>{job.title}</h3>
                   <p style={styles.company}>{job.company}</p>
@@ -205,9 +211,11 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
       {data.skills.length > 0 && (
         <section style={styles.section}>
           <h2 style={styles.sectionTitle}>Core Skills</h2>
-          <div style={styles.skillsGrid}>
-            {data.skills.map((skill: string, index: number) => (
-              <div key={index} style={styles.skill}>{skill}</div>
+          <div style={styles.skillsList}>
+            {data.skills.map((skill, index) => (
+              <span key={index} style={styles.skill}>
+                {skill}
+              </span>
             ))}
           </div>
         </section>
@@ -218,12 +226,12 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({ data, fontFamily = 'G
         <section style={styles.section}>
           <h2 style={styles.sectionTitle}>Notable Projects</h2>
           {data.projects.map((project, index) => (
-            <div key={index} style={{ marginBottom: '1rem' }}>
+            <div key={index} style={{ marginBottom: '12px' }}>
               <h3 style={styles.jobTitle}>{project.name}</h3>
               {project.url && (
-                <p style={{ fontSize: '10pt', color: '#3498db', margin: '0.25rem 0' }}>
+                <h3 style={{ fontSize: '12pt', fontWeight: '600', margin: '0 0 4px 0', color: '#2c3e50' }}>
                   {project.url}
-                </p>
+                </h3>
               )}
               <p style={{ fontSize: '10pt', margin: '0.25rem 0', lineHeight: '1.3' }}>
                 {project.description}

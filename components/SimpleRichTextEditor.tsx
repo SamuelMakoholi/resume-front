@@ -15,31 +15,45 @@ const SimpleRichTextEditor: React.FC<SimpleRichTextEditorProps> = ({
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [isFocused, setIsFocused] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  // Initialize editor with value
+  // Sync external value changes to editor
   useEffect(() => {
-    if (editorRef.current) {
-      if (!editorRef.current.innerHTML || editorRef.current.innerHTML === '<br>') {
-        editorRef.current.innerHTML = value;
+    if (editorRef.current && !isUpdating) {
+      const currentContent = editorRef.current.innerHTML;
+      if (currentContent !== value) {
+        editorRef.current.innerHTML = value || '';
       }
     }
-  }, []);
+  }, [value, isUpdating]);
   
-  // Keep track of cursor position
+  // Save and restore cursor position
   const saveSelection = useCallback(() => {
     const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      return selection.getRangeAt(0);
+    if (selection && selection.rangeCount > 0 && editorRef.current?.contains(selection.anchorNode)) {
+      return {
+        start: selection.anchorOffset,
+        end: selection.focusOffset,
+        anchorNode: selection.anchorNode,
+        focusNode: selection.focusNode
+      };
     }
     return null;
   }, []);
   
-  const restoreSelection = useCallback((range: Range | null) => {
-    if (range) {
-      const selection = window.getSelection();
-      if (selection) {
-        selection.removeAllRanges();
-        selection.addRange(range);
+  const restoreSelection = useCallback((selectionInfo: any) => {
+    if (selectionInfo && editorRef.current) {
+      try {
+        const selection = window.getSelection();
+        if (selection && selectionInfo.anchorNode && editorRef.current.contains(selectionInfo.anchorNode)) {
+          const range = document.createRange();
+          range.setStart(selectionInfo.anchorNode, Math.min(selectionInfo.start, selectionInfo.anchorNode.textContent?.length || 0));
+          range.setEnd(selectionInfo.focusNode || selectionInfo.anchorNode, Math.min(selectionInfo.end, (selectionInfo.focusNode || selectionInfo.anchorNode).textContent?.length || 0));
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      } catch (e) {
+        // Ignore selection restoration errors
       }
     }
   }, []);
@@ -73,27 +87,37 @@ const SimpleRichTextEditor: React.FC<SimpleRichTextEditorProps> = ({
 
   // Handle toolbar button clicks
   const handleFormat = (command: string, value: string = '') => {
-    document.execCommand(command, false, value);
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
       editorRef.current.focus();
+      const savedSelection = saveSelection();
+      document.execCommand(command, false, value);
+      setIsUpdating(true);
+      onChange(editorRef.current.innerHTML);
+      setTimeout(() => {
+        setIsUpdating(false);
+        if (savedSelection) {
+          restoreSelection(savedSelection);
+        }
+      }, 10);
     }
   };
 
   // Handle content changes
-  const handleChange = () => {
-    if (editorRef.current) {
-      // Save current selection before updating
-      const savedSelection = saveSelection();
-      onChange(editorRef.current.innerHTML);
-      // Restore selection after a short delay to ensure DOM update is complete
-      setTimeout(() => {
-        if (editorRef.current && document.activeElement === editorRef.current) {
-          restoreSelection(savedSelection);
-        }
-      }, 0);
+  const handleInput = useCallback(() => {
+    if (editorRef.current && !isUpdating) {
+      setIsUpdating(true);
+      const content = editorRef.current.innerHTML;
+      onChange(content);
+      setTimeout(() => setIsUpdating(false), 10);
     }
-  };
+  }, [onChange, isUpdating]);
+
+  // Handle paste events
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+  }, []);
 
   return (
     <div className="border border-gray-300 rounded-lg overflow-hidden">
@@ -146,41 +170,18 @@ const SimpleRichTextEditor: React.FC<SimpleRichTextEditorProps> = ({
         ref={editorRef}
         contentEditable
         className={`p-4 min-h-[150px] focus:outline-none rich-text-content ${isFocused ? 'ring-2 ring-green-500' : ''} ${!value ? 'empty-editor' : ''}`}
-        onInput={handleChange}
+        onInput={handleInput}
+        onPaste={handlePaste}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && !e.shiftKey) {
-            // Prevent default behavior which can cause cursor position issues
             e.preventDefault();
-            
-            // Save current selection
-            const savedSelection = saveSelection();
-            
-            // Insert a proper line break at the current cursor position
-            document.execCommand('insertHTML', false, '<br>');
-            
-            // Update the value
-            if (editorRef.current) {
-              onChange(editorRef.current.innerHTML);
-              
-              // Restore cursor position
-              setTimeout(() => {
-                if (editorRef.current && document.activeElement === editorRef.current) {
-                  // Try to move cursor after the inserted <br>
-                  const selection = window.getSelection();
-                  if (selection && selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    range.collapse(false); // Collapse to end
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                  }
-                }
-              }, 0);
-            }
+            document.execCommand('insertHTML', false, '<br><br>');
+            handleInput();
           }
         }}
-        dangerouslySetInnerHTML={{ __html: value }}
+        suppressContentEditableWarning={true}
         data-placeholder={placeholder}
         style={{ position: 'relative', cursor: 'text' }}
       />
